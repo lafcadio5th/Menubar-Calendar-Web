@@ -8,11 +8,70 @@
     <meta name="keywords" content="Menubar Calendar, macOS, 選單列, 日曆, Menu Bar, Apple">
     <link rel="icon" type="image/png" href="images/Icon.png">
 
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/">
+
     <!-- Open Graph -->
     <meta property="og:title" content="Menubar Calendar - macOS 選單列日曆">
     <meta property="og:description" content="專為 Mac 設計的選單列日曆，輕鬆查看行程、整合 Apple Calendar、Reminders 與 Todoist">
-    <meta property="og:image" content="images/og-image.png">
+    <meta property="og:image" content="https://lafcadio5th.github.io/Menubar-Calendar-Web/images/og-image.png">
+    <meta property="og:url" content="https://lafcadio5th.github.io/Menubar-Calendar-Web/">
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_TW">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:site_name" content="Menubar Calendar">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Menubar Calendar - macOS 選單列日曆">
+    <meta name="twitter:description" content="專為 Mac 設計的選單列日曆，輕鬆查看行程、整合 Apple Calendar、Reminders 與 Todoist">
+    <meta name="twitter:image" content="https://lafcadio5th.github.io/Menubar-Calendar-Web/images/og-image.png">
+
+    <!-- Language alternates -->
+    <link rel="alternate" hreflang="zh-Hant" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/">
+    <link rel="alternate" hreflang="en" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/">
+
+    <!-- Structured Data - SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Menubar Calendar",
+        "operatingSystem": "macOS",
+        "applicationCategory": "UtilitiesApplication",
+        "description": "專為 Mac 設計的選單列日曆，輕鬆查看行程、整合 Apple Calendar、Reminders 與 Todoist",
+        "offers": [
+            {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "TWD",
+                "name": "Free"
+            },
+            {
+                "@type": "Offer",
+                "price": "30",
+                "priceCurrency": "TWD",
+                "priceValidUntil": "2026-12-31",
+                "name": "Premium Monthly"
+            },
+            {
+                "@type": "Offer",
+                "price": "200",
+                "priceCurrency": "TWD",
+                "priceValidUntil": "2026-12-31",
+                "name": "Premium Yearly"
+            }
+        ],
+        "screenshot": "https://lafcadio5th.github.io/Menubar-Calendar-Web/images/01%20main%20light%20.png",
+        "softwareVersion": "1.0",
+        "author": {
+            "@type": "Person",
+            "name": "Lafcadio"
+        },
+        "inLanguage": ["zh-Hant", "en"]
+    }
+    </script>
 
     <style>
         * {
@@ -606,60 +665,26 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.4);
         }
 
-        /* Popular card - Premium golden glow */
+        /* Popular card - Apple style subtle highlight */
         .pricing-card.popular {
-            background:
-                linear-gradient(145deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.05) 50%, rgba(139, 92, 246, 0.1) 100%);
-            border: 2px solid rgba(251, 191, 36, 0.4);
-            transform: scale(1.05);
-            box-shadow:
-                0 0 60px rgba(251, 191, 36, 0.2),
-                0 25px 50px rgba(0,0,0,0.3);
-        }
-
-        .pricing-card.popular::before {
-            background: linear-gradient(180deg, rgba(251, 191, 36, 0.1) 0%, transparent 50%);
-        }
-
-        .pricing-card.popular::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(251, 191, 36, 0.1), transparent 30%);
-            animation: shimmer 4s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes shimmer {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            border: 1px solid rgba(147, 197, 253, 0.3);
         }
 
         .pricing-card.popular:hover {
-            transform: scale(1.05) translateY(-8px);
-            border-color: rgba(251, 191, 36, 0.6);
-            box-shadow:
-                0 0 80px rgba(251, 191, 36, 0.3),
-                0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(147, 197, 253, 0.5);
         }
 
         .popular-badge {
             position: absolute;
-            top: -1px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-            color: white;
-            padding: 8px 24px;
-            border-radius: 0 0 16px 16px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            top: 16px;
+            right: 16px;
+            background: rgba(147, 197, 253, 0.15);
+            color: rgba(147, 197, 253, 1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
         }
 
         .pricing-card h3 {
@@ -1384,11 +1409,21 @@
             }
 
             .hero h1 {
-                font-size: 36px;
+                font-size: 32px;
+                line-height: 1.2;
             }
 
             .hero .subtitle {
-                font-size: 18px;
+                font-size: 16px;
+            }
+
+            .hero-image {
+                max-width: 320px;
+            }
+
+            .hero-image img {
+                max-height: 280px;
+                object-fit: contain;
             }
 
             .cta-buttons {
@@ -1407,17 +1442,126 @@
             }
 
             .section-title {
-                font-size: 32px;
+                font-size: 28px;
+            }
+
+            .section-subtitle {
+                font-size: 15px;
+                margin-bottom: 40px;
             }
 
             .features-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
+                margin-top: 40px;
+            }
+
+            .feature-card {
+                padding: 24px;
+            }
+
+            .feature-card h4 {
+                font-size: 17px;
+            }
+
+            .feature-card p {
+                font-size: 14px;
             }
 
             .feature-content h3 {
-                font-size: 26px;
+                font-size: 24px;
             }
 
+            .feature-content p {
+                font-size: 15px;
+            }
+
+            .feature-image img {
+                max-height: 240px;
+                object-fit: contain;
+            }
+
+            /* Featured card 手機版 */
+            .feature-card.featured {
+                padding: 24px;
+            }
+
+            .feature-card.featured .feature-content h3 {
+                font-size: 22px;
+            }
+
+            .feature-card.featured .feature-image img {
+                max-height: 200px;
+                object-fit: contain;
+            }
+
+            /* Mode showcase 手機版 */
+            .dual-mode {
+                padding: 60px 20px;
+            }
+
+            .mode-card {
+                padding: 24px;
+            }
+
+            .mode-info h3 {
+                font-size: 22px;
+            }
+
+            .mode-info p {
+                font-size: 14px;
+            }
+
+            .mode-image img {
+                max-height: 240px;
+                object-fit: contain;
+            }
+
+            /* Smart features 手機版 - 圖文順序調整 */
+            .smart-features {
+                padding: 60px 20px;
+            }
+
+            .smart-features-grid {
+                gap: 50px;
+            }
+
+            .smart-feature-card {
+                display: flex;
+                flex-direction: column-reverse;
+                gap: 20px;
+            }
+
+            .smart-feature-card.reverse {
+                flex-direction: column-reverse;
+            }
+
+            .smart-feature-image img {
+                max-height: 220px;
+                object-fit: contain;
+                border-radius: 12px;
+            }
+
+            .smart-feature-content {
+                padding: 0;
+                text-align: center;
+            }
+
+            .smart-feature-content h3 {
+                font-size: 22px;
+            }
+
+            .smart-feature-content p {
+                font-size: 14px;
+            }
+
+            /* Theme showcase 手機版 */
+            .theme-item img {
+                max-height: 200px;
+                object-fit: contain;
+            }
+
+            /* Pricing 手機版 */
             .pricing-cards {
                 flex-direction: column;
                 align-items: center;
@@ -1426,15 +1570,36 @@
             .pricing-card {
                 width: 100%;
                 max-width: 340px;
+                padding: 28px 24px;
+            }
+
+            .pricing-card .price {
+                font-size: 42px;
             }
 
             .faq {
                 padding: 60px 20px;
             }
 
+            .faq-item {
+                padding: 16px;
+            }
+
+            .faq-question {
+                font-size: 15px;
+            }
+
+            .faq-answer {
+                font-size: 14px;
+            }
+
             .footer-links {
                 flex-direction: column;
                 gap: 16px;
+            }
+
+            footer {
+                padding: 40px 20px;
             }
         }
     </style>

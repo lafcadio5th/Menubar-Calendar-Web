@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lafcadio5th.github.io/Menubar-Calendar-Web/sitemap.xml

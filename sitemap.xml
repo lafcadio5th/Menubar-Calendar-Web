@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+    <!-- Homepage - Chinese (default) -->
+    <url>
+        <loc>https://lafcadio5th.github.io/Menubar-Calendar-Web/</loc>
+        <lastmod>2026-01-16</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/?lang=en"/>
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/"/>
+    </url>
+
+    <!-- Privacy Policy -->
+    <url>
+        <loc>https://lafcadio5th.github.io/Menubar-Calendar-Web/privacy.html</loc>
+        <lastmod>2026-01-16</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+</urlset>

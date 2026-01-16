@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menubar Calendar - macOS 選單列日曆</title>
+    <meta name="description" content="專為 Mac 設計的選單列日曆，輕鬆查看行程、整合 Apple Calendar、Reminders 與 Todoist">
+    <meta name="keywords" content="Menubar Calendar, macOS, 選單列, 日曆, Menu Bar, Apple">
+    <link rel="icon" type="image/png" href="images/Icon.png">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Menubar Calendar - macOS 選單列日曆">
+    <meta property="og:description" content="專為 Mac 設計的選單列日曆，輕鬆查看行程、整合 Apple Calendar、Reminders 與 Todoist">
+    <meta property="og:image" content="images/og-image.png">
+    <meta property="og:type" content="website">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #5a6a7a;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --bg-gradient-start: #e8f4fc;
+            --bg-gradient-end: #d4e8f2;
+            --card-bg: white;
+            --nav-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --check-bg: #dcfce7;
+            --check-color: #16a34a;
+        }
+
+        html[data-theme="dark"] {
+            --primary-color: #8a9aaa;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --card-bg: rgba(45, 45, 50, 0.9);
+            --nav-bg: rgba(30, 30, 35, 0.9);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --check-bg: #1a3a2a;
+            --check-color: #4ade80;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+            background:
+                radial-gradient(ellipse 80% 80% at 10% 10%, rgba(147, 197, 253, 0.5) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 70% at 90% 15%, rgba(196, 181, 253, 0.4) 0%, transparent 55%),
+                radial-gradient(ellipse 90% 90% at 85% 85%, rgba(134, 239, 172, 0.35) 0%, transparent 60%),
+                radial-gradient(ellipse 75% 75% at 5% 90%, rgba(253, 186, 116, 0.3) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 60% at 50% 50%, rgba(165, 180, 252, 0.25) 0%, transparent 50%),
+                linear-gradient(135deg, #f0f7ff 0%, #e8f4fc 20%, #dceef8 40%, #e0f5f0 60%, #f5f0ff 80%, #fff5f5 100%);
+            background-size: 150% 150%, 150% 150%, 150% 150%, 150% 150%, 120% 120%, 100% 100%;
+            animation: gradientFlow 20s ease-in-out infinite;
+            transition: color 0.3s ease;
+        }
+
+        html[data-theme="dark"] body {
+            background:
+                radial-gradient(ellipse 80% 80% at 10% 10%, rgba(59, 130, 246, 0.35) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 70% at 90% 15%, rgba(139, 92, 246, 0.3) 0%, transparent 55%),
+                radial-gradient(ellipse 90% 90% at 85% 85%, rgba(16, 185, 129, 0.25) 0%, transparent 60%),
+                radial-gradient(ellipse 75% 75% at 5% 90%, rgba(245, 158, 11, 0.2) 0%, transparent 55%),
+                radial-gradient(ellipse 60% 60% at 50% 50%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a1a 0%, #0f172a 20%, #1e1b4b 40%, #042f2e 60%, #1c1917 80%, #0a0a1a 100%);
+            background-size: 150% 150%, 150% 150%, 150% 150%, 150% 150%, 120% 120%, 100% 100%;
+        }
+
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, 50% 50%, 0% 0%;
+            }
+            25% {
+                background-position: 25% 50%, 75% 25%, 75% 75%, 25% 75%, 25% 75%, 0% 0%;
+            }
+            50% {
+                background-position: 50% 100%, 50% 50%, 50% 50%, 50% 50%, 75% 25%, 0% 0%;
+            }
+            75% {
+                background-position: 75% 50%, 25% 75%, 25% 25%, 75% 25%, 50% 50%, 0% 0%;
+            }
+            100% {
+                background-position: 0% 0%, 100% 0%, 100% 100%, 0% 100%, 50% 50%, 0% 0%;
+            }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 16px 40px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .lang-switch {
+            display: flex;
+            background: var(--border-color);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .lang-switch button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .lang-switch button.active {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .lang-switch button:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 140px 40px 80px;
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .hero .subtitle {
+            font-size: 22px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 400;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #1d1d1f;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #000;
+            transform: scale(1.02);
+        }
+
+        .btn-primary svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: var(--text-primary);
+            padding: 16px 32px;
+            border-radius: 980px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        /* Hero Image */
+        .hero-image {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .hero-image img {
+            width: 100%;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 60px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Feature Showcase */
+        .feature-showcase {
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+        }
+
+        .feature-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .feature-item.reverse {
+            direction: rtl;
+        }
+
+        .feature-item.reverse > * {
+            direction: ltr;
+        }
+
+        .feature-content h3 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .feature-content p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .feature-image img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 80px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 20px;
+        }
+
+        .feature-icon.blue { background: #e3f2fd; color: #1976d2; }
+        .feature-icon.green { background: #e8f5e9; color: #388e3c; }
+        .feature-icon.purple { background: #f3e5f5; color: #7b1fa2; }
+        .feature-icon.orange { background: #fff3e0; color: #f57c00; }
+        .feature-icon.red { background: #ffebee; color: #d32f2f; }
+        .feature-icon.teal { background: #e0f2f1; color: #00897b; }
+
+        .feature-icon svg {
+            transition: transform 0.3s ease;
+        }
+
+        /* Dual state icon container */
+        .feature-icon.has-dual-state {
+            position: relative;
+        }
+
+        .feature-icon.has-dual-state .icon-default {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .feature-icon.has-dual-state .icon-hover {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8) rotate(-10deg);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon.has-dual-state .icon-default {
+            opacity: 0;
+            transform: scale(0.8) rotate(10deg);
+        }
+
+        .feature-card:hover .feature-icon.has-dual-state .icon-hover {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        }
+
+        /* Featured/Hero Feature Card */
+        .feature-card.featured {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+            text-align: left;
+            padding: 48px;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #d1fae5 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(22, 163, 74, 0.15);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(22, 163, 74, 0.08);
+        }
+
+        .feature-card.featured::before {
+            display: none;
+        }
+
+        .feature-card.featured .feature-left {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-card.featured .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            font-size: 28px;
+            margin: 0;
+            background: white;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+        }
+
+        .feature-card.featured .feature-content {
+            flex: 1;
+        }
+
+        .feature-card.featured .feature-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-card.featured h3 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            color: #166534;
+        }
+
+        .feature-card.featured p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .feature-card.featured .feature-preview-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feature-card.featured .feature-preview {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+
+        @media (max-width: 968px) {
+            .feature-card.featured {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 32px 24px;
+                gap: 32px;
+            }
+
+            .feature-card.featured .feature-left {
+                align-items: center;
+            }
+
+            .feature-card.featured .feature-icon {
+                margin: 0 auto;
+            }
+
+            .feature-card.featured .feature-preview {
+                max-width: 300px;
+            }
+        }
+
+        /* Scroll animation for feature cards */
+        .feature-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .feature-card.animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0s; }
+        .feature-card:nth-child(2) { animation-delay: 0.1s; }
+        .feature-card:nth-child(3) { animation-delay: 0.2s; }
+        .feature-card:nth-child(4) { animation-delay: 0.3s; }
+        .feature-card:nth-child(5) { animation-delay: 0.4s; }
+        .feature-card:nth-child(6) { animation-delay: 0.5s; }
+        .feature-card:nth-child(7) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Premium Section - Luxury Design */
+        .premium {
+            padding: 120px 40px;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                linear-gradient(180deg, #0f0f12 0%, #1a1a20 50%, #0f0f12 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .premium .section-title {
+            color: white;
+            font-size: 44px;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .premium .section-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 18px;
+        }
+
+        .pricing-cards {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 36px 32px;
+            width: 320px;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+        }
+
+        /* Popular card - Premium golden glow */
+        .pricing-card.popular {
+            background:
+                linear-gradient(145deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.05) 50%, rgba(139, 92, 246, 0.1) 100%);
+            border: 2px solid rgba(251, 191, 36, 0.4);
+            transform: scale(1.05);
+            box-shadow:
+                0 0 60px rgba(251, 191, 36, 0.2),
+                0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .pricing-card.popular::before {
+            background: linear-gradient(180deg, rgba(251, 191, 36, 0.1) 0%, transparent 50%);
+        }
+
+        .pricing-card.popular::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(251, 191, 36, 0.1), transparent 30%);
+            animation: shimmer 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .pricing-card.popular:hover {
+            transform: scale(1.05) translateY(-8px);
+            border-color: rgba(251, 191, 36, 0.6);
+            box-shadow:
+                0 0 80px rgba(251, 191, 36, 0.3),
+                0 30px 60px rgba(0,0,0,0.4);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 0 0 16px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .pricing-card h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .pricing-card .price {
+            font-size: 52px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .pricing-card .price .currency {
+            font-size: 24px;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .pricing-card.popular .price {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-card .period {
+            font-size: 14px;
+            opacity: 0.5;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .save-note {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .pricing-card .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            margin: 20px 0;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 28px;
+        }
+
+        .pricing-card li {
+            font-size: 14px;
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.9;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .pricing-card li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-card li .check-icon {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+
+        .pricing-card.popular li .check-icon {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        /* CTA Button */
+        .pricing-card .cta-btn {
+            display: block;
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .pricing-card .cta-btn.outline {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+        }
+
+        .pricing-card .cta-btn.outline:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .pricing-card.popular .cta-btn {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #000;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.3);
+        }
+
+        .pricing-card.popular .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(251, 191, 36, 0.4);
+        }
+
+        .free-trial {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 15px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .free-trial .highlight {
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        /* Trust badges */
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 48px;
+            flex-wrap: wrap;
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+        }
+
+        .trust-badge svg {
+            width: 18px;
+            height: 18px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 768px) {
+            .premium {
+                padding: 80px 20px;
+            }
+
+            .pricing-card.popular {
+                transform: scale(1);
+            }
+
+            .pricing-card.popular:hover {
+                transform: translateY(-8px);
+            }
+
+            .pricing-cards {
+                gap: 20px;
+            }
+
+            .pricing-card {
+                width: 100%;
+                max-width: 340px;
+            }
+
+            .trust-badges {
+                gap: 20px;
+            }
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 100px 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        .faq-question {
+            padding: 24px;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .faq-question:hover {
+            background: var(--border-color);
+        }
+
+        .faq-question::after {
+            content: "+";
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--text-secondary);
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-question::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .faq-answer-content {
+            padding: 0 24px 24px;
+            color: var(--text-secondary);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 600px;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            font-weight: 600;
+            background: var(--border-color);
+        }
+
+        .comparison-table th:first-child,
+        .comparison-table td:first-child {
+            text-align: left;
+        }
+
+        .comparison-table td:nth-child(2),
+        .comparison-table td:nth-child(3) {
+            font-size: 16px;
+        }
+
+        .comparison-table td:nth-child(3) {
+            color: var(--check-color);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .copyright {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .made-with {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Dual Mode Section */
+        .dual-mode {
+            padding: 100px 40px;
+        }
+
+        .dual-mode-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .mode-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 6px;
+            gap: 6px;
+        }
+
+        .mode-toggle button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            color: #64748b;
+        }
+
+        .mode-toggle button.active {
+            background: white;
+            color: #1d1d1f;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .mode-toggle button:hover:not(.active) {
+            color: #1d1d1f;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .mode-toggle button svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .mode-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+        }
+
+        .mode-image {
+            flex: 0 0 auto;
+            position: relative;
+        }
+
+        .mode-image img {
+            max-height: 500px;
+            width: auto;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .mode-image img.hidden {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) scale(0.95);
+            opacity: 0;
+        }
+
+        .mode-image img.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .mode-info {
+            flex: 0 0 360px;
+        }
+
+        .mode-info h3 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            transition: opacity 0.3s;
+        }
+
+        .mode-info p {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 24px;
+            transition: opacity 0.3s;
+        }
+
+        .mode-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mode-features.hidden {
+            display: none;
+        }
+
+        .mode-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+
+        .mode-feature .check {
+            width: 24px;
+            height: 24px;
+            background: var(--check-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--check-color);
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        @media (max-width: 968px) {
+            .mode-display {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .mode-info {
+                flex: 0 0 auto;
+                text-align: center;
+            }
+
+            .mode-features {
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dual-mode {
+                padding: 60px 20px;
+            }
+
+            .mode-toggle button {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .mode-info h3 {
+                font-size: 26px;
+            }
+
+            .mode-image img {
+                max-height: 400px;
+            }
+        }
+
+        /* Smart Features Section */
+        .smart-features {
+            padding: 100px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .smart-features-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .smart-feature-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .smart-feature-card.reverse {
+            direction: rtl;
+        }
+
+        .smart-feature-card.reverse > * {
+            direction: ltr;
+        }
+
+        .smart-feature-image img {
+            width: 100%;
+        }
+
+        .smart-feature-content {
+            padding: 20px 0;
+        }
+
+        .smart-feature-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #5a6a7a 0%, #4a5a6a 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .smart-feature-content h3 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .smart-feature-content p {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        @media (max-width: 968px) {
+            .smart-feature-card {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .smart-feature-card.reverse {
+                direction: ltr;
+            }
+
+            .smart-feature-content h3 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .smart-features {
+                padding: 60px 20px;
+            }
+        }
+
+        /* Theme Showcase Section */
+        .theme-showcase {
+            padding: 100px 40px;
+        }
+
+        .theme-showcase .section-title {
+            margin-bottom: 16px;
+        }
+
+        .theme-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+
+        .theme-toggle {
+            display: flex;
+            background: #e5e7eb;
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .theme-toggle button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            color: #64748b;
+        }
+
+        .theme-toggle button.active {
+            background: white;
+            color: #1d1d1f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .theme-toggle button:hover:not(.active) {
+            color: #1d1d1f;
+        }
+
+        .theme-images {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .theme-image-card {
+            text-align: center;
+        }
+
+        .theme-image-card h4 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            color: var(--text-secondary);
+        }
+
+        .theme-image-wrapper {
+            position: relative;
+        }
+
+        .theme-image-wrapper img {
+            width: 100%;
+            display: block;
+            transition: opacity 0.4s ease;
+        }
+
+        .theme-image-wrapper img.hidden {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+        }
+
+        .theme-image-wrapper img.visible {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .theme-images {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .theme-showcase {
+                padding: 60px 20px;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .feature-item {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .feature-item.reverse {
+                direction: ltr;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero {
+                padding: 120px 20px 60px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .subtitle {
+                font-size: 18px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+
+            .features {
+                padding: 60px 20px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-content h3 {
+                font-size: 26px;
+            }
+
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .pricing-card {
+                width: 100%;
+                max-width: 340px;
+            }
+
+            .faq {
+                padding: 60px 20px;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <img src="images/Icon.png" alt="Menubar Calendar Icon">
+            <span>Menubar Calendar</span>
+        </div>
+        <div class="nav-links">
+            <a href="#features" data-i18n="nav.features">功能</a>
+            <a href="#themes" data-i18n="nav.themes">主題</a>
+            <a href="#pricing" data-i18n="nav.pricing">價格</a>
+            <a href="#faq">FAQ</a>
+            <a href="https://github.com/user/mac-calendar" target="_blank">GitHub</a>
+            <div class="lang-switch">
+                <button class="active" data-lang="zh">中文</button>
+                <button data-lang="en">EN</button>
+            </div>
+        </div>
+        <button class="mobile-menu-btn">☰</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 data-i18n="hero.title">選單列日曆，一鍵掌握行程</h1>
+        <p class="subtitle" data-i18n="hero.subtitle">專為 Mac 設計的選單列日曆，整合 Apple Calendar、Reminders 與 Todoist，讓你輕鬆管理每一天</p>
+
+        <div class="cta-buttons">
+            <a href="#" class="btn-primary">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/>
+                </svg>
+                <span data-i18n="hero.download">Download on Mac App Store</span>
+            </a>
+            <a href="https://github.com/user/mac-calendar" class="btn-secondary" target="_blank">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12C0 17.31 3.435 21.795 8.205 23.385C8.805 23.49 9.03 23.13 9.03 22.815C9.03 22.53 9.015 21.585 9.015 20.58C6 21.135 5.22 19.845 4.98 19.17C4.845 18.825 4.26 17.76 3.75 17.475C3.33 17.25 2.73 16.695 3.735 16.68C4.68 16.665 5.355 17.55 5.58 17.91C6.66 19.725 8.385 19.215 9.075 18.9C9.18 18.12 9.495 17.595 9.84 17.295C7.17 16.995 4.38 15.96 4.38 11.37C4.38 10.065 4.845 8.985 5.61 8.145C5.49 7.845 5.07 6.615 5.73 4.965C5.73 4.965 6.735 4.65 9.03 6.195C9.99 5.925 11.01 5.79 12.03 5.79C13.05 5.79 14.07 5.925 15.03 6.195C17.325 4.635 18.33 4.965 18.33 4.965C18.99 6.615 18.57 7.845 18.45 8.145C19.215 8.985 19.68 10.05 19.68 11.37C19.68 15.975 16.875 16.995 14.205 17.295C14.64 17.67 15.015 18.39 15.015 19.515C15.015 21.12 15 22.41 15 22.815C15 23.13 15.225 23.505 15.825 23.385C20.565 21.795 24 17.295 24 12C24 5.37 18.63 0 12 0Z"/>
+                </svg>
+                <span data-i18n="hero.github">View on GitHub</span>
+            </a>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="hero-image">
+            <img src="images/01 main light .png" alt="Menubar Calendar 選單列日曆截圖">
+        </div>
+    </section>
+
+    <!-- Dual Mode Section -->
+    <section class="dual-mode" id="modes">
+        <h2 class="section-title" data-i18n="modes.title">多種視圖，自由切換</h2>
+        <p class="section-subtitle" data-i18n="modes.subtitle">選單列快速查看，或釘選在桌面隨時掌握行程</p>
+
+        <div class="dual-mode-container">
+            <div class="mode-toggle-container">
+                <div class="mode-toggle">
+                    <button class="active" data-mode="menubar" data-i18n="modes.menubar">
+                        選單列模式
+                    </button>
+                    <button data-mode="desktop" data-i18n="modes.desktop">
+                        桌面模式
+                    </button>
+                    <button data-mode="compact" data-i18n="modes.compact">
+                        精簡模式
+                    </button>
+                </div>
+            </div>
+
+            <div class="mode-display">
+                <div class="mode-image">
+                    <img src="images/01 main light .png" alt="選單列模式" class="mode-img menubar visible">
+                    <img src="images/03 desktop main light.png" alt="桌面模式" class="mode-img desktop hidden">
+                    <img src="images/14 main calendar fold view.png" alt="精簡模式" class="mode-img compact hidden">
+                </div>
+
+                <div class="mode-info">
+                    <h3 class="mode-title" data-i18n="modes.menubar.title">選單列模式</h3>
+                    <p class="mode-desc" data-i18n="modes.menubar.desc">點擊選單列圖示，快速彈出日曆視窗。查看完畢後自動收起，不佔用桌面空間。</p>
+                    <div class="mode-features" id="mode-features-menubar">
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.menubar.f1">一鍵開啟，隨點隨看</span>
+                        </div>
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.menubar.f2">月曆 + 週曆視圖切換</span>
+                        </div>
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.menubar.f3">支援快捷鍵快速開啟</span>
+                        </div>
+                    </div>
+                    <div class="mode-features hidden" id="mode-features-desktop">
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.desktop.f1">常駐桌面，隨時可見</span>
+                        </div>
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.desktop.f2">自由拖曳位置</span>
+                        </div>
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.desktop.f3">即時天氣動態背景</span>
+                        </div>
+                    </div>
+                    <div class="mode-features hidden" id="mode-features-compact">
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.compact.f1">只顯示今日行程列表</span>
+                        </div>
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.compact.f2">整合 Todoist 待辦事項</span>
+                        </div>
+                        <div class="mode-feature">
+                            <span class="check">✓</span>
+                            <span data-i18n="modes.compact.f3">一鍵展開完整日曆</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title" data-i18n="features.title">為效率而生的功能</h2>
+        <p class="section-subtitle" data-i18n="features.subtitle">一個日曆 App，整合你所有的行程管理需求</p>
+
+        <div class="features-grid">
+            <!-- Featured Hero Card - Meeting One-Click Join -->
+            <div class="feature-card featured">
+                <div class="feature-left">
+                    <div class="feature-icon green has-dual-state">
+                        <svg class="icon-default" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="14" height="14" rx="2" ry="2"></rect>
+                            <polygon points="22 7 16 12 22 17 22 7"></polygon>
+                        </svg>
+                        <svg class="icon-hover" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="14" height="14" rx="2" ry="2"></rect>
+                            <polygon points="22 7 16 12 22 17 22 7"></polygon>
+                        </svg>
+                    </div>
+                    <div class="feature-content">
+                        <span class="feature-badge" data-i18n="features.meeting.badge">最受歡迎功能</span>
+                        <h3 data-i18n="features.meeting.title">會議一鍵加入</h3>
+                        <p data-i18n="features.meeting.desc">不再手忙腳亂找會議連結。自動偵測 Zoom、Google Meet、Teams、Webex，開會前點一下就能加入。</p>
+                    </div>
+                </div>
+                <div class="feature-preview-wrapper">
+                    <img src="images/11 calendar one click to meeting call - zoom_white.png" alt="會議一鍵加入功能預覽" class="feature-preview">
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon blue has-dual-state">
+                    <!-- 月曆（預設） -->
+                    <svg class="icon-default" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <!-- 有勾選標記的日曆（hover） -->
+                    <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <polyline points="9 15 11 17 15 13" stroke-width="2"></polyline>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.menubar.title">選單列常駐</h3>
+                <p data-i18n="features.menubar.desc">無需開啟 App，一鍵查看今日行程。隨時掌握時間，效率翻倍。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon purple has-dual-state">
+                    <!-- 鈴鐺（預設） -->
+                    <svg class="icon-default" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <!-- 震動的鈴鐺（hover） -->
+                    <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        <line x1="1" y1="4" x2="3" y2="6"></line>
+                        <line x1="21" y1="6" x2="23" y2="4"></line>
+                        <line x1="1" y1="8" x2="2" y2="8"></line>
+                        <line x1="22" y1="8" x2="23" y2="8"></line>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.reminder.title">智慧會議提醒</h3>
+                <p data-i18n="features.reminder.desc">告別遲到焦慮，會議前自動提醒，從容準備每一場會議。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon orange has-dual-state">
+                    <!-- 新月（預設） -->
+                    <svg class="icon-default" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                    </svg>
+                    <!-- 滿月（hover） -->
+                    <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <circle cx="9" cy="10" r="1.5" fill="currentColor" opacity="0.3"></circle>
+                        <circle cx="15" cy="13" r="2" fill="currentColor" opacity="0.2"></circle>
+                        <circle cx="10" cy="15" r="1" fill="currentColor" opacity="0.25"></circle>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.lunar.title">農曆顯示</h3>
+                <p data-i18n="features.lunar.desc">中秋、端午不再忘記，傳統節日一眼掌握。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon red has-dual-state">
+                    <!-- 太陽（預設） -->
+                    <svg class="icon-default" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <!-- 月亮（hover） -->
+                    <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+                        <path d="M19 12.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1Z" fill="currentColor"></path>
+                        <path d="M21 9a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1Z" fill="currentColor"></path>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.weather.title">即時天氣</h3>
+                <p data-i18n="features.weather.desc">出門前先看天氣，搭配動態背景讓日曆更生動。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon teal has-dual-state">
+                    <!-- 程式碼（預設） -->
+                    <svg class="icon-default" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m18 16 4-4-4-4"></path>
+                        <path d="m6 8-4 4 4 4"></path>
+                        <path d="m14.5 4-5 16"></path>
+                    </svg>
+                    <!-- 鍵盤（hover） -->
+                    <svg class="icon-hover" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                        <line x1="6" y1="8" x2="6.01" y2="8"></line>
+                        <line x1="10" y1="8" x2="10.01" y2="8"></line>
+                        <line x1="14" y1="8" x2="14.01" y2="8"></line>
+                        <line x1="18" y1="8" x2="18.01" y2="8"></line>
+                        <line x1="6" y1="12" x2="6.01" y2="12"></line>
+                        <line x1="18" y1="12" x2="18.01" y2="12"></line>
+                        <line x1="8" y1="16" x2="16" y2="16"></line>
+                    </svg>
+                </div>
+                <h3 data-i18n="features.hotkey.title">快捷鍵支援</h3>
+                <p data-i18n="features.hotkey.desc">手不離鍵盤就能開啟日曆，工程師專屬效率工具。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Smart Features Section -->
+    <section class="smart-features">
+        <h2 class="section-title" data-i18n="smart.title">智慧行事曆功能</h2>
+        <p class="section-subtitle" data-i18n="smart.subtitle">行程不只是行程，更是你的行動捷徑</p>
+
+        <div class="smart-features-grid">
+            <div class="smart-feature-card">
+                <div class="smart-feature-image">
+                    <img src="images/11 calendar one click to meeting call.png" alt="一鍵加入會議">
+                </div>
+                <div class="smart-feature-content">
+                    <div class="smart-feature-badge" data-i18n="smart.meeting.badge">會議整合</div>
+                    <h3 data-i18n="smart.meeting.title">一鍵加入線上會議</h3>
+                    <p data-i18n="smart.meeting.desc">自動偵測行程中的 Zoom、Google Meet、Microsoft Teams、Webex 連結，點一下就能直接加入會議，不用再從信件中翻找連結。</p>
+                </div>
+            </div>
+
+            <div class="smart-feature-card reverse">
+                <div class="smart-feature-image">
+                    <img src="images/17 calendar destination route larger.png" alt="路線規劃">
+                </div>
+                <div class="smart-feature-content">
+                    <div class="smart-feature-badge" data-i18n="smart.nav.badge">導航整合</div>
+                    <h3 data-i18n="smart.nav.title">路線規劃一目瞭然</h3>
+                    <p data-i18n="smart.nav.desc">行程有地點？直接在日曆中預覽路線地圖，查看距離與預估時間。支援 Apple Maps 和 Google Maps，一鍵開始導航。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Theme Showcase Section -->
+    <section class="theme-showcase" id="themes">
+        <h2 class="section-title" data-i18n="themes.title">淺色與深色主題</h2>
+        <p class="section-subtitle" data-i18n="themes.subtitle">自動跟隨系統設定，或手動選擇你喜歡的外觀</p>
+
+        <div class="theme-toggle-container">
+            <div class="theme-toggle">
+                <button class="active" data-theme="light">
+                    <span>☀️</span> <span data-i18n="themes.light">淺色模式</span>
+                </button>
+                <button data-theme="dark">
+                    <span>🌙</span> <span data-i18n="themes.dark">深色模式</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="theme-images">
+            <div class="theme-image-card">
+                <h4 data-i18n="themes.menubarCal">選單列日曆</h4>
+                <div class="theme-image-wrapper">
+                    <img src="images/01 main light .png" alt="選單列日曆 淺色模式" class="theme-img light visible" data-type="menubar">
+                    <img src="images/02 main dark.png" alt="選單列日曆 深色模式" class="theme-img dark hidden" data-type="menubar">
+                </div>
+            </div>
+            <div class="theme-image-card">
+                <h4 data-i18n="themes.desktopWidget">桌面小工具</h4>
+                <div class="theme-image-wrapper">
+                    <img src="images/03 desktop main light.png" alt="桌面小工具 淺色模式" class="theme-img light visible" data-type="desktop">
+                    <img src="images/04 desktop main dark.png" alt="桌面小工具 深色模式" class="theme-img dark hidden" data-type="desktop">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Premium Section -->
+    <section class="premium" id="pricing">
+        <h2 class="section-title" data-i18n="pricing.title">升級 Premium</h2>
+        <p class="section-subtitle" data-i18n="pricing.subtitle">解鎖所有進階功能，讓你的日曆體驗更完整</p>
+
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3 data-i18n="pricing.monthly">月訂閱</h3>
+                <div class="price"><span class="currency">$</span>0.99</div>
+                <div class="period" data-i18n="pricing.perMonth">每月</div>
+                <div class="save-note" style="visibility: hidden;">佔位</div>
+                <div class="divider"></div>
+                <ul>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f1">即時天氣 + 動態背景</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f2">桌面小工具</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f3">Todoist 整合</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f4">自訂通知時間</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f5">30 秒極速同步</span></li>
+                </ul>
+                <a href="#" class="cta-btn outline" data-i18n="pricing.cta.monthly">開始試用</a>
+            </div>
+            <div class="pricing-card popular">
+                <div class="popular-badge" data-i18n="pricing.badge">最划算</div>
+                <h3 data-i18n="pricing.yearly">年訂閱</h3>
+                <div class="price"><span class="currency">$</span>7.99</div>
+                <div class="period" data-i18n="pricing.perYear">每年</div>
+                <div class="save-note" data-i18n="pricing.saveNote">💰 省下 $3.89（相當於 4 個月免費）</div>
+                <div class="divider"></div>
+                <ul>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f1">即時天氣 + 動態背景</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f2">桌面小工具</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f3">Todoist 整合</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f4">自訂通知時間</span></li>
+                    <li><span class="check-icon">✓</span><span data-i18n="pricing.f5">30 秒極速同步</span></li>
+                </ul>
+                <a href="#" class="cta-btn" data-i18n="pricing.cta.yearly">立即升級</a>
+            </div>
+        </div>
+
+        <div class="free-trial"><span data-i18n="pricing.trialText">所有方案皆含</span> <span class="highlight" data-i18n="pricing.trialDays">7 天免費試用</span></div>
+
+        <div class="trust-badges">
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span data-i18n="pricing.trust1">安全付款</span>
+            </div>
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                <span data-i18n="pricing.trust2">隨時取消</span>
+            </div>
+            <div class="trust-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span data-i18n="pricing.trust3">App Store 驗證</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <h2 class="section-title" data-i18n="faq.title">常見問題</h2>
+        <p class="section-subtitle" data-i18n="faq.subtitle">有任何問題？也許這裡有答案</p>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <div class="faq-question" data-i18n="faq.q1">免費版和 Premium 版有什麼差別？</div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>功能</th>
+                                    <th>免費版</th>
+                                    <th>Premium</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>選單列日曆</td>
+                                    <td>✓</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>Apple Calendar 整合</td>
+                                    <td>✓</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>Apple Reminders 整合</td>
+                                    <td>✓</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>基本通知</td>
+                                    <td>✓</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>即時天氣 + 動態背景</td>
+                                    <td>—</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>桌面小工具</td>
+                                    <td>—</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>Todoist 整合</td>
+                                    <td>—</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>自訂通知時間</td>
+                                    <td>—</td>
+                                    <td>✓</td>
+                                </tr>
+                                <tr>
+                                    <td>30 秒極速同步</td>
+                                    <td>—</td>
+                                    <td>✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" data-i18n="faq.q2">支援哪些 macOS 版本？</div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content" data-i18n="faq.a2">
+                        Menubar Calendar 支援 macOS 13.0 (Ventura) 及更新版本，包括最新的 macOS Sequoia。我們建議使用最新版本的 macOS 以獲得最佳體驗。
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" data-i18n="faq.q3">如何取消訂閱？</div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content" data-i18n="faq.a3">
+                        你可以隨時在 App Store 的帳號設定中管理或取消訂閱。前往「設定」>「Apple ID」>「訂閱項目」，找到 Menubar Calendar 即可管理訂閱。取消後，你仍可使用 Premium 功能直到當期訂閱結束。
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" data-i18n="faq.q4">我的日曆資料會上傳到雲端嗎？</div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content" data-i18n="faq.a4">
+                        不會。Menubar Calendar 直接讀取你 Mac 上的 Apple Calendar 資料，所有資料都儲存在本地，我們不會收集或上傳任何個人日曆資料。天氣功能僅傳送城市位置以獲取天氣資訊。
+                    </div>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" data-i18n="faq.q5">如何回報問題或提出建議？</div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content" data-i18n="faq.a5">
+                        歡迎到我們的 GitHub 頁面開 Issue 回報問題或提出功能建議。你也可以透過 App 內的「關於」頁面找到聯絡方式。我們非常重視用戶的回饋！
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/user/mac-calendar" target="_blank">GitHub</a>
+            <a href="https://github.com/user/mac-calendar/issues" target="_blank" data-i18n="footer.issues">問題回報</a>
+            <a href="privacy.html" data-i18n="footer.privacy">隱私權政策</a>
+            <a href="mailto:contact@example.com" data-i18n="footer.contact">聯絡我們</a>
+        </div>
+        <div class="copyright">
+            © 2026 Menubar Calendar. All rights reserved.
+        </div>
+        <div class="made-with">
+            Made with ❤️ in Taiwan 🇹🇼
+        </div>
+    </footer>
+
+    <script>
+        // i18n Translations
+        const translations = {
+            zh: {
+                'nav.features': '功能',
+                'nav.themes': '主題',
+                'nav.pricing': '價格',
+                'hero.title': '選單列日曆，一鍵掌握行程',
+                'hero.subtitle': '專為 Mac 設計的選單列日曆，整合 Apple Calendar、Reminders 與 Todoist，讓你輕鬆管理每一天',
+                'hero.download': 'Download on Mac App Store',
+                'hero.github': 'View on GitHub',
+                'modes.title': '多種視圖，自由切換',
+                'modes.subtitle': '選單列快速查看，或釘選在桌面隨時掌握行程',
+                'modes.menubar': '選單列模式',
+                'modes.desktop': '桌面模式',
+                'modes.compact': '精簡模式',
+                'modes.menubar.title': '選單列模式',
+                'modes.menubar.desc': '點擊選單列圖示，快速彈出日曆視窗。查看完畢後自動收起，不佔用桌面空間。',
+                'modes.menubar.f1': '一鍵開啟，隨點隨看',
+                'modes.menubar.f2': '月曆 + 週曆視圖切換',
+                'modes.menubar.f3': '支援快捷鍵快速開啟',
+                'modes.desktop.title': '桌面模式',
+                'modes.desktop.desc': '將日曆釘選在桌面上，隨時可見。支援即時天氣動態背景，讓你的桌面更加生動。',
+                'modes.desktop.f1': '常駐桌面，隨時可見',
+                'modes.desktop.f2': '自由拖曳位置',
+                'modes.desktop.f3': '即時天氣動態背景',
+                'modes.compact.title': '精簡模式',
+                'modes.compact.desc': '收合日曆只顯示今日行程列表，需要時一鍵展開完整日曆。節省空間，效率至上。',
+                'modes.compact.f1': '只顯示今日行程列表',
+                'modes.compact.f2': '整合 Todoist 待辦事項',
+                'modes.compact.f3': '一鍵展開完整日曆',
+                'features.title': '為效率而生的功能',
+                'features.subtitle': '一個日曆 App，整合你所有的行程管理需求',
+                'features.menubar.title': '選單列常駐',
+                'features.menubar.desc': '無需開啟 App，一鍵查看今日行程。隨時掌握時間，效率翻倍。',
+                'features.meeting.badge': '最受歡迎功能',
+                'features.meeting.title': '會議一鍵加入',
+                'features.meeting.desc': '不再手忙腳亂找會議連結。自動偵測 Zoom、Google Meet、Teams、Webex，開會前點一下就能加入。',
+                'features.reminder.title': '智慧會議提醒',
+                'features.reminder.desc': '告別遲到焦慮，會議前自動提醒，從容準備每一場會議。',
+                'features.lunar.title': '農曆顯示',
+                'features.lunar.desc': '中秋、端午不再忘記，傳統節日一眼掌握。',
+                'features.weather.title': '即時天氣',
+                'features.weather.desc': '出門前先看天氣，搭配動態背景讓日曆更生動。',
+                'features.hotkey.title': '快捷鍵支援',
+                'features.hotkey.desc': '手不離鍵盤就能開啟日曆，工程師專屬效率工具。',
+                'smart.title': '智慧行事曆功能',
+                'smart.subtitle': '行程不只是行程，更是你的行動捷徑',
+                'smart.meeting.badge': '會議整合',
+                'smart.meeting.title': '一鍵加入線上會議',
+                'smart.meeting.desc': '自動偵測行程中的 Zoom、Google Meet、Microsoft Teams、Webex 連結，點一下就能直接加入會議，不用再從信件中翻找連結。',
+                'smart.nav.badge': '導航整合',
+                'smart.nav.title': '路線規劃一目瞭然',
+                'smart.nav.desc': '行程有地點？直接在日曆中預覽路線地圖，查看距離與預估時間。支援 Apple Maps 和 Google Maps，一鍵開始導航。',
+                'themes.title': '淺色與深色主題',
+                'themes.subtitle': '自動跟隨系統設定，或手動選擇你喜歡的外觀',
+                'themes.light': '淺色模式',
+                'themes.dark': '深色模式',
+                'themes.menubarCal': '選單列日曆',
+                'themes.desktopWidget': '桌面小工具',
+                'pricing.title': '升級 Premium',
+                'pricing.subtitle': '解鎖所有進階功能，讓你的日曆體驗更完整',
+                'pricing.monthly': '月訂閱',
+                'pricing.yearly': '年訂閱',
+                'pricing.perMonth': '每月',
+                'pricing.perYear': '每年',
+                'pricing.save': '省 33%',
+                'pricing.f1': '即時天氣 + 動態背景',
+                'pricing.f2': '桌面小工具',
+                'pricing.f3': 'Todoist 整合',
+                'pricing.f4': '自訂通知時間',
+                'pricing.f5': '30 秒極速同步',
+                'pricing.badge': '最划算',
+                'pricing.saveNote': '💰 省下 $3.89（相當於 4 個月免費）',
+                'pricing.cta.monthly': '開始試用',
+                'pricing.cta.yearly': '立即升級',
+                'pricing.trialText': '所有方案皆含',
+                'pricing.trialDays': '7 天免費試用',
+                'pricing.trust1': '安全付款',
+                'pricing.trust2': '隨時取消',
+                'pricing.trust3': 'App Store 驗證',
+                'faq.title': '常見問題',
+                'faq.subtitle': '有任何問題？也許這裡有答案',
+                'faq.q1': '免費版和 Premium 版有什麼差別？',
+                'faq.q2': '支援哪些 macOS 版本？',
+                'faq.a2': 'Menubar Calendar 支援 macOS 13.0 (Ventura) 及更新版本，包括最新的 macOS Sequoia。我們建議使用最新版本的 macOS 以獲得最佳體驗。',
+                'faq.q3': '如何取消訂閱？',
+                'faq.a3': '你可以隨時在 App Store 的帳號設定中管理或取消訂閱。前往「設定」>「Apple ID」>「訂閱項目」，找到 Menubar Calendar 即可管理訂閱。取消後，你仍可使用 Premium 功能直到當期訂閱結束。',
+                'faq.q4': '我的日曆資料會上傳到雲端嗎？',
+                'faq.a4': '不會。Menubar Calendar 直接讀取你 Mac 上的 Apple Calendar 資料，所有資料都儲存在本地，我們不會收集或上傳任何個人日曆資料。天氣功能僅傳送城市位置以獲取天氣資訊。',
+                'faq.q5': '如何回報問題或提出建議？',
+                'faq.a5': '歡迎到我們的 GitHub 頁面開 Issue 回報問題或提出功能建議。你也可以透過 App 內的「關於」頁面找到聯絡方式。我們非常重視用戶的回饋！',
+                'footer.issues': '問題回報',
+                'footer.privacy': '隱私權政策',
+                'footer.contact': '聯絡我們'
+            },
+            en: {
+                'nav.features': 'Features',
+                'nav.themes': 'Themes',
+                'nav.pricing': 'Pricing',
+                'hero.title': 'Menu Bar Calendar, One Click Away',
+                'hero.subtitle': 'A menu bar calendar designed for Mac, integrating Apple Calendar, Reminders and Todoist for effortless daily management',
+                'hero.download': 'Download on Mac App Store',
+                'hero.github': 'View on GitHub',
+                'modes.title': 'Multiple Views, Switch Freely',
+                'modes.subtitle': 'Quick access from menu bar, or pin to desktop for constant visibility',
+                'modes.menubar': 'Menu Bar Mode',
+                'modes.desktop': 'Desktop Mode',
+                'modes.compact': 'Compact Mode',
+                'modes.menubar.title': 'Menu Bar Mode',
+                'modes.menubar.desc': 'Click the menu bar icon to quickly pop up the calendar. Auto-hides when done, saving desktop space.',
+                'modes.menubar.f1': 'One-click access, instant view',
+                'modes.menubar.f2': 'Month & Week view toggle',
+                'modes.menubar.f3': 'Custom hotkey support',
+                'modes.desktop.title': 'Desktop Mode',
+                'modes.desktop.desc': 'Pin the calendar to your desktop for constant visibility. Features live weather animations for a dynamic experience.',
+                'modes.desktop.f1': 'Always visible on desktop',
+                'modes.desktop.f2': 'Freely drag to position',
+                'modes.desktop.f3': 'Live weather backgrounds',
+                'modes.compact.title': 'Compact Mode',
+                'modes.compact.desc': 'Collapsed view shows only today\'s events. Expand full calendar when needed. Space-efficient and productivity-focused.',
+                'modes.compact.f1': 'Today\'s events only',
+                'modes.compact.f2': 'Todoist integration',
+                'modes.compact.f3': 'One-click to expand',
+                'features.title': 'Features Built for Efficiency',
+                'features.subtitle': 'One calendar app for all your scheduling needs',
+                'features.menubar.title': 'Menu Bar Access',
+                'features.menubar.desc': 'No app switching needed. Check your schedule instantly. Stay on top of time, double your efficiency.',
+                'features.meeting.badge': 'Most Popular',
+                'features.meeting.title': 'One-Click Join',
+                'features.meeting.desc': 'No more scrambling for meeting links. Auto-detects Zoom, Google Meet, Teams, Webex — one click to join before your meeting starts.',
+                'features.reminder.title': 'Smart Reminders',
+                'features.reminder.desc': 'Say goodbye to late-to-meeting anxiety. Get notified in advance, prepare with confidence.',
+                'features.lunar.title': 'Lunar Calendar',
+                'features.lunar.desc': 'Never forget Mid-Autumn or Dragon Boat. Traditional holidays at a glance.',
+                'features.weather.title': 'Live Weather',
+                'features.weather.desc': 'Check weather before heading out. Animated backgrounds make your calendar come alive.',
+                'features.hotkey.title': 'Hotkey Support',
+                'features.hotkey.desc': 'Open calendar without leaving your keyboard. Built for developers and power users.',
+                'smart.title': 'Smart Calendar Features',
+                'smart.subtitle': 'Events are not just events — they\'re action shortcuts',
+                'smart.meeting.badge': 'Meeting Integration',
+                'smart.meeting.title': 'One-Click Join Online Meetings',
+                'smart.meeting.desc': 'Automatically detects Zoom, Google Meet, Microsoft Teams, Webex links in your events. Join meetings instantly with one click — no more searching through emails.',
+                'smart.nav.badge': 'Navigation Integration',
+                'smart.nav.title': 'Route Planning at a Glance',
+                'smart.nav.desc': 'Event has a location? Preview the route map directly in the calendar, check distance and estimated time. Supports Apple Maps and Google Maps for instant navigation.',
+                'themes.title': 'Light & Dark Themes',
+                'themes.subtitle': 'Auto-follows system settings, or manually choose your preferred look',
+                'themes.light': 'Light Mode',
+                'themes.dark': 'Dark Mode',
+                'themes.menubarCal': 'Menu Bar Calendar',
+                'themes.desktopWidget': 'Desktop Widget',
+                'pricing.title': 'Upgrade to Premium',
+                'pricing.subtitle': 'Unlock all advanced features for a complete calendar experience',
+                'pricing.monthly': 'Monthly',
+                'pricing.yearly': 'Yearly',
+                'pricing.perMonth': 'per month',
+                'pricing.perYear': 'per year',
+                'pricing.save': 'Save 33%',
+                'pricing.f1': 'Live Weather + Animated Backgrounds',
+                'pricing.f2': 'Desktop Widget',
+                'pricing.f3': 'Todoist Integration',
+                'pricing.f4': 'Custom Notification Times',
+                'pricing.f5': '30-Second Fast Sync',
+                'pricing.badge': 'Best Value',
+                'pricing.saveNote': '💰 Save $3.89 (4 months free)',
+                'pricing.cta.monthly': 'Start Trial',
+                'pricing.cta.yearly': 'Upgrade Now',
+                'pricing.trialText': 'All plans include',
+                'pricing.trialDays': '7-day free trial',
+                'pricing.trust1': 'Secure Payment',
+                'pricing.trust2': 'Cancel Anytime',
+                'pricing.trust3': 'App Store Verified',
+                'faq.title': 'FAQ',
+                'faq.subtitle': 'Have questions? You might find answers here',
+                'faq.q1': 'What\'s the difference between Free and Premium?',
+                'faq.q2': 'Which macOS versions are supported?',
+                'faq.a2': 'Menubar Calendar supports macOS 13.0 (Ventura) and later, including the latest macOS Sequoia. We recommend using the latest macOS for the best experience.',
+                'faq.q3': 'How do I cancel my subscription?',
+                'faq.a3': 'You can manage or cancel your subscription anytime in the App Store account settings. Go to Settings > Apple ID > Subscriptions, find Menubar Calendar to manage. After cancellation, you can still use Premium features until the current period ends.',
+                'faq.q4': 'Will my calendar data be uploaded to the cloud?',
+                'faq.a4': 'No. Menubar Calendar reads directly from your Mac\'s Apple Calendar data. All data is stored locally — we don\'t collect or upload any personal calendar data. Weather feature only sends city location for weather information.',
+                'faq.q5': 'How do I report issues or make suggestions?',
+                'faq.a5': 'Welcome to open an Issue on our GitHub page to report problems or suggest features. You can also find contact info in the app\'s About page. We highly value user feedback!',
+                'footer.issues': 'Report Issues',
+                'footer.privacy': 'Privacy Policy',
+                'footer.contact': 'Contact Us'
+            }
+        };
+
+        let currentLang = 'zh';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-Hant' : 'en');
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            // Update mode data for Mode Toggle
+            updateModeData();
+
+            // Update lang switch button states
+            document.querySelectorAll('.lang-switch button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+        }
+
+        function updateModeData() {
+            const lang = currentLang;
+            modeDataI18n.menubar.title = translations[lang]['modes.menubar.title'];
+            modeDataI18n.menubar.desc = translations[lang]['modes.menubar.desc'];
+            modeDataI18n.desktop.title = translations[lang]['modes.desktop.title'];
+            modeDataI18n.desktop.desc = translations[lang]['modes.desktop.desc'];
+            modeDataI18n.compact.title = translations[lang]['modes.compact.title'];
+            modeDataI18n.compact.desc = translations[lang]['modes.compact.desc'];
+        }
+
+        const modeDataI18n = {
+            menubar: { title: '', desc: '' },
+            desktop: { title: '', desc: '' },
+            compact: { title: '', desc: '' }
+        };
+
+        // Language Switch Event
+        document.querySelectorAll('.lang-switch button').forEach(button => {
+            button.addEventListener('click', () => {
+                setLanguage(button.dataset.lang);
+            });
+        });
+
+        // Initialize language
+        updateModeData();
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentElement;
+                const isActive = item.classList.contains('active');
+
+                // Close all items
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                });
+
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Theme Toggle
+        document.querySelectorAll('.theme-toggle button').forEach(button => {
+            button.addEventListener('click', () => {
+                const theme = button.dataset.theme;
+
+                // Update global theme
+                document.documentElement.setAttribute('data-theme', theme);
+
+                // Update button states
+                document.querySelectorAll('.theme-toggle button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                // Update images
+                document.querySelectorAll('.theme-img').forEach(img => {
+                    if (theme === 'light') {
+                        if (img.classList.contains('light')) {
+                            img.classList.remove('hidden');
+                            img.classList.add('visible');
+                        } else {
+                            img.classList.remove('visible');
+                            img.classList.add('hidden');
+                        }
+                    } else {
+                        if (img.classList.contains('dark')) {
+                            img.classList.remove('hidden');
+                            img.classList.add('visible');
+                        } else {
+                            img.classList.remove('visible');
+                            img.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+        });
+
+        // Scroll Animation for Feature Cards
+        const featureObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    featureObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            featureObserver.observe(card);
+        });
+
+        // Mode Toggle (Dual Mode Section)
+        document.querySelectorAll('.mode-toggle button').forEach(button => {
+            button.addEventListener('click', () => {
+                const mode = button.dataset.mode;
+
+                // Update button states
+                document.querySelectorAll('.mode-toggle button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                // Update images with animation
+                document.querySelectorAll('.mode-img').forEach(img => {
+                    if (img.classList.contains(mode)) {
+                        img.classList.remove('hidden');
+                        img.classList.add('visible');
+                    } else {
+                        img.classList.remove('visible');
+                        img.classList.add('hidden');
+                    }
+                });
+
+                // Update title and description using i18n
+                document.querySelector('.mode-title').textContent = translations[currentLang][`modes.${mode}.title`];
+                document.querySelector('.mode-desc').textContent = translations[currentLang][`modes.${mode}.desc`];
+
+                // Update features list
+                document.querySelectorAll('.mode-features').forEach(featureList => {
+                    const featureId = featureList.id.replace('mode-features-', '');
+                    if (featureId === mode) {
+                        featureList.classList.remove('hidden');
+                    } else {
+                        featureList.classList.add('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

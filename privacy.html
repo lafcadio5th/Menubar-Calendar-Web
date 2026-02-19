@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隱私權政策 - Menubar Calendar</title>
+    <title data-i18n-title="zh">隱私權政策 - Menubar Calendar</title>
     <meta name="description" content="Menubar Calendar 隱私權政策 - 了解我們如何保護您的資料">
     <link rel="icon" type="image/png" href="images/Icon.png">
     <link rel="canonical" href="https://lafcadio5th.github.io/Menubar-Calendar-Web/privacy.html">
@@ -93,6 +93,36 @@
 
         .nav-links a:hover {
             opacity: 1;
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            padding: 3px;
+        }
+
+        .lang-switch button {
+            padding: 4px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .lang-switch button.active {
+            background: white;
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .lang-switch button:hover:not(.active) {
+            color: var(--text-primary);
         }
 
         .content {
@@ -292,20 +322,24 @@
             <span>Menubar Calendar</span>
         </a>
         <div class="nav-links">
-            <a href="index.html">首頁</a>
-            <a href="support.html">支援中心</a>
+            <a href="index.html" data-i18n="nav.home">首頁</a>
+            <a href="support.html" data-i18n="nav.support">支援中心</a>
             <a href="index.html#faq">FAQ</a>
+            <div class="lang-switch">
+                <button class="active" data-lang="zh">中文</button>
+                <button data-lang="en">EN</button>
+            </div>
         </div>
     </nav>
 
     <div class="content">
         <div class="page-header">
-            <h1>隱私權政策</h1>
-            <p class="last-updated">最後更新：2026 年 1 月</p>
+            <h1 data-i18n="page.title">隱私權政策</h1>
+            <p class="last-updated" data-i18n="page.lastUpdated">最後更新：2026 年 1 月</p>
         </div>
 
         <div class="policy-content">
-            <p class="policy-intro">
+            <p class="policy-intro" data-i18n="intro">
                 Menubar Calendar（以下簡稱「本應用程式」）非常重視您的隱私。本隱私權政策說明我們如何收集、使用和保護您的個人資訊。
             </p>
 
@@ -318,13 +352,13 @@
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
                     </div>
-                    <h2>資料收集</h2>
+                    <h2 data-i18n="s1.title">資料收集</h2>
                 </div>
-                <p>本應用程式設計以隱私為優先。我們收集的資料極為有限：</p>
+                <p data-i18n="s1.desc">本應用程式設計以隱私為優先。我們收集的資料極為有限：</p>
                 <ul>
-                    <li><strong>日曆資料：</strong>本應用程式讀取您 Mac 上的 Apple Calendar 資料以顯示行程。這些資料僅在本地處理，不會傳送至任何伺服器。</li>
-                    <li><strong>提醒事項：</strong>本應用程式讀取 Apple Reminders 資料以顯示待辦事項。這些資料僅在本地處理。</li>
-                    <li><strong>位置資訊（選擇性）：</strong>如果您啟用天氣功能，我們會使用您的大致位置（城市層級）來獲取天氣資訊。我們不會儲存您的精確位置。</li>
+                    <li data-i18n-html="s1.l1"><strong>日曆資料：</strong>本應用程式讀取您 Mac 上的 Apple Calendar 資料以顯示行程。這些資料僅在本地處理，不會傳送至任何伺服器。</li>
+                    <li data-i18n-html="s1.l2"><strong>提醒事項：</strong>本應用程式讀取 Apple Reminders 資料以顯示待辦事項。這些資料僅在本地處理。</li>
+                    <li data-i18n-html="s1.l3"><strong>位置資訊（選擇性）：</strong>如果您啟用天氣功能，我們會使用您的大致位置（城市層級）來獲取天氣資訊。我們不會儲存您的精確位置。</li>
                 </ul>
             </div>
 
@@ -337,12 +371,12 @@
                             <line x1="10" y1="14" x2="21" y2="3"></line>
                         </svg>
                     </div>
-                    <h2>第三方服務</h2>
+                    <h2 data-i18n="s2.title">第三方服務</h2>
                 </div>
-                <p>本應用程式可能使用以下第三方服務：</p>
+                <p data-i18n="s2.desc">本應用程式可能使用以下第三方服務：</p>
                 <ul>
-                    <li><strong>天氣服務：</strong>我們使用第三方天氣 API 提供天氣資訊。僅傳送城市名稱，不傳送個人身份資訊。</li>
-                    <li><strong>Todoist（選擇性）：</strong>如果您選擇連結 Todoist 帳號，我們會透過官方 API 存取您的任務資料。我們不會儲存您的 Todoist 憑證。</li>
+                    <li data-i18n-html="s2.l1"><strong>天氣服務：</strong>我們使用第三方天氣 API 提供天氣資訊。僅傳送城市名稱，不傳送個人身份資訊。</li>
+                    <li data-i18n-html="s2.l2"><strong>Todoist（選擇性）：</strong>如果您選擇連結 Todoist 帳號，我們會透過官方 API 存取您的任務資料。我們不會儲存您的 Todoist 憑證。</li>
                 </ul>
             </div>
 
@@ -353,9 +387,9 @@
                             <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                         </svg>
                     </div>
-                    <h2>資料儲存</h2>
+                    <h2 data-i18n="s3.title">資料儲存</h2>
                 </div>
-                <p>所有設定和快取資料都儲存在您的 Mac 本地。我們不營運任何伺服器來儲存用戶資料。</p>
+                <p data-i18n="s3.desc">所有設定和快取資料都儲存在您的 Mac 本地。我們不營運任何伺服器來儲存用戶資料。</p>
             </div>
 
             <div class="policy-section">
@@ -366,9 +400,9 @@
                             <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
                         </svg>
                     </div>
-                    <h2>資料分享</h2>
+                    <h2 data-i18n="s4.title">資料分享</h2>
                 </div>
-                <p>我們不會出售、交易或以其他方式轉讓您的個人資訊給第三方。</p>
+                <p data-i18n="s4.desc">我們不會出售、交易或以其他方式轉讓您的個人資訊給第三方。</p>
             </div>
 
             <div class="policy-section">
@@ -379,9 +413,9 @@
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
                     </div>
-                    <h2>安全性</h2>
+                    <h2 data-i18n="s5.title">安全性</h2>
                 </div>
-                <p>本應用程式使用 macOS 的安全機制來保護您的資料，包括 App Sandbox 和 Keychain 服務。</p>
+                <p data-i18n="s5.desc">本應用程式使用 macOS 的安全機制來保護您的資料，包括 App Sandbox 和 Keychain 服務。</p>
             </div>
 
             <div class="policy-section">
@@ -392,13 +426,13 @@
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </div>
-                    <h2>您的權利</h2>
+                    <h2 data-i18n="s6.title">您的權利</h2>
                 </div>
-                <p>您可以隨時：</p>
+                <p data-i18n="s6.desc">您可以隨時：</p>
                 <ul>
-                    <li>在系統偏好設定中撤銷本應用程式的日曆、提醒事項或位置權限</li>
-                    <li>刪除本應用程式以移除所有本地儲存的設定</li>
-                    <li>聯絡我們詢問關於您資料的任何問題</li>
+                    <li data-i18n="s6.l1">在系統偏好設定中撤銷本應用程式的日曆、提醒事項或位置權限</li>
+                    <li data-i18n="s6.l2">刪除本應用程式以移除所有本地儲存的設定</li>
+                    <li data-i18n="s6.l3">聯絡我們詢問關於您資料的任何問題</li>
                 </ul>
             </div>
 
@@ -412,9 +446,9 @@
                             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                         </svg>
                     </div>
-                    <h2>兒童隱私</h2>
+                    <h2 data-i18n="s7.title">兒童隱私</h2>
                 </div>
-                <p>本應用程式不針對 13 歲以下的兒童，我們不會故意收集兒童的個人資訊。</p>
+                <p data-i18n="s7.desc">本應用程式不針對 13 歲以下的兒童，我們不會故意收集兒童的個人資訊。</p>
             </div>
 
             <div class="policy-section">
@@ -425,9 +459,9 @@
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                         </svg>
                     </div>
-                    <h2>政策變更</h2>
+                    <h2 data-i18n="s8.title">政策變更</h2>
                 </div>
-                <p>我們可能會不時更新本隱私權政策。任何變更都會在此頁面公布，並更新「最後更新」日期。</p>
+                <p data-i18n="s8.desc">我們可能會不時更新本隱私權政策。任何變更都會在此頁面公布，並更新「最後更新」日期。</p>
             </div>
 
             <div class="policy-section">
@@ -438,22 +472,125 @@
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
                     </div>
-                    <h2>聯絡我們</h2>
+                    <h2 data-i18n="s9.title">聯絡我們</h2>
                 </div>
-                <p>如果您對本隱私權政策有任何疑問，請透過 <a href="https://github.com/lafcadio5th/Menubar-Calendar/issues" style="color: var(--primary-color); text-decoration: none;">GitHub Issues</a> 或<a href="mailto:contact@example.com" style="color: var(--primary-color); text-decoration: none;">電子郵件</a>聯絡我們。</p>
+                <p data-i18n-html="s9.desc">如果您對本隱私權政策有任何疑問，請透過 <a href="https://github.com/lafcadio5th/Menubar-Calendar/issues" style="color: var(--primary-color); text-decoration: none;">GitHub Issues</a> 或<a href="mailto:contact@example.com" style="color: var(--primary-color); text-decoration: none;">電子郵件</a>聯絡我們。</p>
             </div>
         </div>
     </div>
 
     <footer>
         <div class="footer-links">
-            <a href="index.html">首頁</a>
-            <a href="support.html">支援中心</a>
+            <a href="index.html" data-i18n="nav.home">首頁</a>
+            <a href="support.html" data-i18n="nav.support">支援中心</a>
             <a href="index.html#faq">FAQ</a>
         </div>
         <div class="copyright">
             © 2026 Menubar Calendar. Made with ❤️ in Taiwan 🇹🇼
         </div>
     </footer>
+    <script>
+        const translations = {
+            zh: {
+                'nav.home': '首頁',
+                'nav.support': '支援中心',
+                'page.title': '隱私權政策',
+                'page.lastUpdated': '最後更新：2026 年 1 月',
+                'intro': 'Menubar Calendar（以下簡稱「本應用程式」）非常重視您的隱私。本隱私權政策說明我們如何收集、使用和保護您的個人資訊。',
+                's1.title': '資料收集',
+                's1.desc': '本應用程式設計以隱私為優先。我們收集的資料極為有限：',
+                's1.l1': '<strong>日曆資料：</strong>本應用程式讀取您 Mac 上的 Apple Calendar 資料以顯示行程。這些資料僅在本地處理，不會傳送至任何伺服器。',
+                's1.l2': '<strong>提醒事項：</strong>本應用程式讀取 Apple Reminders 資料以顯示待辦事項。這些資料僅在本地處理。',
+                's1.l3': '<strong>位置資訊（選擇性）：</strong>如果您啟用天氣功能，我們會使用您的大致位置（城市層級）來獲取天氣資訊。我們不會儲存您的精確位置。',
+                's2.title': '第三方服務',
+                's2.desc': '本應用程式可能使用以下第三方服務：',
+                's2.l1': '<strong>天氣服務：</strong>我們使用第三方天氣 API 提供天氣資訊。僅傳送城市名稱，不傳送個人身份資訊。',
+                's2.l2': '<strong>Todoist（選擇性）：</strong>如果您選擇連結 Todoist 帳號，我們會透過官方 API 存取您的任務資料。我們不會儲存您的 Todoist 憑證。',
+                's3.title': '資料儲存',
+                's3.desc': '所有設定和快取資料都儲存在您的 Mac 本地。我們不營運任何伺服器來儲存用戶資料。',
+                's4.title': '資料分享',
+                's4.desc': '我們不會出售、交易或以其他方式轉讓您的個人資訊給第三方。',
+                's5.title': '安全性',
+                's5.desc': '本應用程式使用 macOS 的安全機制來保護您的資料，包括 App Sandbox 和 Keychain 服務。',
+                's6.title': '您的權利',
+                's6.desc': '您可以隨時：',
+                's6.l1': '在系統偏好設定中撤銷本應用程式的日曆、提醒事項或位置權限',
+                's6.l2': '刪除本應用程式以移除所有本地儲存的設定',
+                's6.l3': '聯絡我們詢問關於您資料的任何問題',
+                's7.title': '兒童隱私',
+                's7.desc': '本應用程式不針對 13 歲以下的兒童，我們不會故意收集兒童的個人資訊。',
+                's8.title': '政策變更',
+                's8.desc': '我們可能會不時更新本隱私權政策。任何變更都會在此頁面公布，並更新「最後更新」日期。',
+                's9.title': '聯絡我們',
+                's9.desc': '如果您對本隱私權政策有任何疑問，請透過 <a href="https://github.com/lafcadio5th/Menubar-Calendar/issues" style="color: var(--primary-color); text-decoration: none;">GitHub Issues</a> 或<a href="mailto:contact@example.com" style="color: var(--primary-color); text-decoration: none;">電子郵件</a>聯絡我們。'
+            },
+            en: {
+                'nav.home': 'Home',
+                'nav.support': 'Support',
+                'page.title': 'Privacy Policy',
+                'page.lastUpdated': 'Last Updated: January 2026',
+                'intro': 'Menubar Calendar values your privacy. This Privacy Policy explains how we collect, use, and protect your personal information.',
+                's1.title': 'Data Collection',
+                's1.desc': 'This app is designed with privacy first. The data we collect is extremely limited:',
+                's1.l1': '<strong>Calendar Data:</strong> The app reads your Apple Calendar data on your Mac to display events. This data is processed locally only and is never sent to any server.',
+                's1.l2': '<strong>Reminders:</strong> The app reads Apple Reminders data to display to-do items. This data is processed locally only.',
+                's1.l3': '<strong>Location (Optional):</strong> If you enable the weather feature, we use your approximate location (city level) to fetch weather information. We do not store your precise location.',
+                's2.title': 'Third-Party Services',
+                's2.desc': 'The app may use the following third-party services:',
+                's2.l1': '<strong>Weather Service:</strong> We use a third-party weather API to provide weather information. Only city names are transmitted — no personal identifiers.',
+                's2.l2': '<strong>Todoist (Optional):</strong> If you choose to connect your Todoist account, we access your task data via the official API. We do not store your Todoist credentials.',
+                's3.title': 'Data Storage',
+                's3.desc': 'All settings and cached data are stored locally on your Mac. We do not operate any servers to store user data.',
+                's4.title': 'Data Sharing',
+                's4.desc': 'We do not sell, trade, or otherwise transfer your personal information to third parties.',
+                's5.title': 'Security',
+                's5.desc': 'The app uses macOS security mechanisms to protect your data, including App Sandbox and Keychain services.',
+                's6.title': 'Your Rights',
+                's6.desc': 'You may at any time:',
+                's6.l1': 'Revoke the app\'s calendar, reminders, or location permissions in System Preferences',
+                's6.l2': 'Delete the app to remove all locally stored settings',
+                's6.l3': 'Contact us with any questions about your data',
+                's7.title': 'Children\'s Privacy',
+                's7.desc': 'This app is not directed at children under 13, and we do not knowingly collect personal information from children.',
+                's8.title': 'Policy Changes',
+                's8.desc': 'We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated "Last Updated" date.',
+                's9.title': 'Contact Us',
+                's9.desc': 'If you have any questions about this Privacy Policy, please reach out via <a href="https://github.com/lafcadio5th/Menubar-Calendar/issues" style="color: var(--primary-color); text-decoration: none;">GitHub Issues</a> or <a href="mailto:contact@example.com" style="color: var(--primary-color); text-decoration: none;">email</a>.'
+            }
+        };
+
+        function setLanguage(lang) {
+            document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-Hant' : 'en');
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-html]').forEach(el => {
+                const key = el.getAttribute('data-i18n-html');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            document.querySelectorAll('.lang-switch button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Update page title
+            document.title = lang === 'zh'
+                ? '隱私權政策 - Menubar Calendar'
+                : 'Privacy Policy - Menubar Calendar';
+        }
+
+        document.querySelectorAll('.lang-switch button').forEach(button => {
+            button.addEventListener('click', () => {
+                setLanguage(button.dataset.lang);
+            });
+        });
+    </script>
 </body>
 </html>

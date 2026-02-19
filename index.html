@@ -2422,11 +2422,19 @@
         // Language Switch Event
         document.querySelectorAll('.lang-switch button').forEach(button => {
             button.addEventListener('click', () => {
-                setLanguage(button.dataset.lang);
+                const lang = button.dataset.lang;
+                localStorage.setItem('lang', lang);
+                setLanguage(lang);
             });
         });
 
         // Initialize language
+        const savedLang = localStorage.getItem('lang');
+        const browserLang = navigator.language || navigator.userLanguage;
+        const initLang = savedLang || (browserLang && browserLang.startsWith('zh') ? 'zh' : 'en');
+        if (initLang === 'en') {
+            setLanguage('en');
+        }
         updateModeData();
 
         // FAQ Accordion
